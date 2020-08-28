@@ -49,6 +49,7 @@
         <module>brick</module>
         <module>nextcloud</module>
         <module>manta</module>
+        <module>box</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
