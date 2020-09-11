@@ -44,8 +44,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoSystemException;
-import com.dracoon.sdk.crypto.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.error.CryptoSystemException;
+import com.dracoon.sdk.crypto.error.UnknownVersionException;
+import com.dracoon.sdk.crypto.model.PlainFileKey;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private static final Logger log = Logger.getLogger(SDSEncryptionBulkFeature.class);
@@ -69,7 +70,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     final Path container = new PathContainerService().getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
-                        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey(PlainFileKey.Version.AES256GCM));
                         status.setFilekey(nodeid.getFileKey(fileKey));
                         if(PreferencesFactory.get().getBoolean("sds.upload.s3.enable")) {
                             if(session.configuration().stream().anyMatch(property -> "use_s3_storage".equals(property.getKey()) && String.valueOf(true).equals(property.getValue()))) {
@@ -88,7 +89,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                                             }
                                         }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
                                     }
-                                    catch(CryptoSystemException | InvalidFileKeyException e) {
+                                    catch(CryptoSystemException | UnknownVersionException e) {
                                         throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, entry.getKey().remote);
                                     }
                                     new StreamCopier(status, new TransferStatus()).transfer(in, out);
