@@ -165,6 +165,11 @@ public final class TerminalOptionsBuilder {
             .longOpt(Params.existing.name())
             .desc(actions.toString())
             .hasArg().argName("action").build());
+        options.addOption(Option.builder("o")
+            .valueSeparator(',')
+            .longOpt(Params.option.name())
+            .desc("Set option")
+            .hasArg().argName("preference").build());
         options.addOption(Option.builder("v")
             .longOpt(Params.verbose.name())
             .desc("Print transcript").build());
@@ -198,6 +203,7 @@ public final class TerminalOptionsBuilder {
         nokeychain,
         vault,
         existing,
+        option,
         verbose,
         quiet,
         assumeyes,

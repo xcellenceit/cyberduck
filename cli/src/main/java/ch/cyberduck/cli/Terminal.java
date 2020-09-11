@@ -375,6 +375,14 @@ public class Terminal {
                 String.valueOf(NumberUtils.toInt(input.getOptionValue(TerminalOptionsBuilder.Params.parallel.name()), 2)));
         }
         preferences.setDefault("connection.login.keychain", String.valueOf(!input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())));
+        // Allow to override defaults with parameter
+        if(input.hasOption(TerminalOptionsBuilder.Params.option.name())) {
+            for(String option : input.getOptionValues(TerminalOptionsBuilder.Params.option.name())) {
+                if(StringUtils.contains(option, '=')) {
+                    preferences.setDefault(StringUtils.split(option, '=')[0], StringUtils.split(option, '=')[1]);
+                }
+            }
+        }
     }
 
     protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {
